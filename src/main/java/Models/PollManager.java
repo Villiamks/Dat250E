@@ -17,7 +17,7 @@ public class PollManager {
     private final AtomicLong voteIdCounter = new AtomicLong(1);
     private final AtomicLong voteOptionIdCounter = new AtomicLong(1);
 
-    public User CreateUser(User user){
+    public User createUser(User user){
         user.setId(userIdCounter.getAndIncrement());
         users.put(user.getId(), user);
         return user;
@@ -53,8 +53,7 @@ public class PollManager {
         creator.setCreatedPolls(tmp);
     }
 
-    public void vote(User us, VoteOption vo) {
-        Vote ny = new Vote(us, vo);
+    public void vote(Vote ny) {
         ny.setId(voteIdCounter.getAndIncrement());
         votes.put(ny.getId(), ny);
     }
@@ -62,8 +61,8 @@ public class PollManager {
         return new ArrayList<>(votes.values());
     }
     public void changeVote(Vote ny, Vote old){
-        votes.remove(old.getId());
         ny.setId(old.getId());
+        votes.remove(old.getId());
         votes.put(ny.getId(), ny);
     }
 }

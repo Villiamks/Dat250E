@@ -29,7 +29,7 @@ public class PollManagerController {
 
     @PostMapping
     public User createUser(@RequestBody User user){
-        return pollManager.CreateUser(user);
+        return pollManager.createUser(user);
     }
 
     @PostMapping
@@ -57,8 +57,8 @@ public class PollManagerController {
     //Votes:
 
     @PostMapping
-    public void vote(@RequestBody User us, @RequestBody VoteOption vo){
-        pollManager.vote(us,vo);
+    public void vote(@RequestBody Vote vote){
+        pollManager.vote(vote);
     }
 
     @GetMapping
@@ -67,7 +67,7 @@ public class PollManagerController {
     }
 
     @PostMapping
-    public void changeVote(@RequestBody Vote ny, @RequestBody Vote old) {
-        pollManager.changeVote(ny, old);
+    public void changeVote(@RequestBody Vote vote, @RequestBody Vote old) {
+        pollManager.changeVote(vote, old);
     }
 }

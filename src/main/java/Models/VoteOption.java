@@ -16,8 +16,6 @@ public class VoteOption {
     @JsonIgnore
     private List<Vote> votes = new ArrayList<>();
 
-    public VoteOption() {}
-
     public VoteOption(String caption, int presentationOrder, Poll poll) {
         this.caption = caption;
         this.presentationOrder = presentationOrder;

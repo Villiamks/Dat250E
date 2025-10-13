@@ -47,4 +47,14 @@ public class Poll {
 
     public List<Vote> getVotes() { return votes; }
     public void setVotes(List<Vote> votes) { this.votes = votes; }
+
+    public Vote getVoteByUser(User user){
+        for (int i = 0; i < votes.size(); i++){
+            Vote tmp = votes.get(i);
+            if ( tmp.getUser() == user ){
+                return tmp;
+            }
+        }
+        return null;
+    }
 }
