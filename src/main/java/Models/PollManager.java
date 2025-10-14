@@ -80,13 +80,19 @@ public class PollManager {
     //Votes:
 
     public void vote(User user, VoteOption voteOption) {
-        Vote ny = new Vote(user, voteOption);
 
-        ny.setId(voteIdCounter.getAndIncrement());
-        votes.put(ny.getId(), ny);
+        if (user != null && voteOption.getPoll().getVoteByUser(user) != null){
+            changeVote(user, voteOption);
+        } else {
 
-        Poll poll = voteOption.getPoll();
-        poll.getVotes().add(ny);
+            Vote ny = new Vote(user, voteOption);
+
+            ny.setId(voteIdCounter.getAndIncrement());
+            votes.put(ny.getId(), ny);
+
+            Poll poll = voteOption.getPoll();
+            poll.getVotes().add(ny);
+        }
     }
 
     public List<Vote> getAllVotes() {

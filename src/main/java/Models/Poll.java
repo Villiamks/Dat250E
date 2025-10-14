@@ -84,6 +84,9 @@ public class Poll {
     }
 
     public Vote getVoteByUser(User user) {
+        if (votes.size() == 0){
+            return null;
+        }
         for (int i = 0; i <= votes.size(); i++) {
             Vote tmp = votes.get(i);
             if (tmp != null && tmp.getUser() == user) {
