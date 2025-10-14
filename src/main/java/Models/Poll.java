@@ -27,31 +27,66 @@ public class Poll {
         this.creator = creator;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getQuestion() { return question; }
-    public void setQuestion(String question) { this.question = question; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Instant getPublishedAt() { return publishedAt; }
-    public void setPublishedAt(Instant publishedAt) { this.publishedAt = publishedAt; }
+    public String getQuestion() {
+        return question;
+    }
 
-    public Instant getValidUntil() { return validUntil; }
-    public void setValidUntil(Instant validUntil) { this.validUntil = validUntil; }
+    public void setQuestion(String question) {
+        this.question = question;
+    }
 
-    public User getCreator() { return creator; }
-    public void setCreator(User creator) { this.creator = creator; }
+    public Instant getPublishedAt() {
+        return publishedAt;
+    }
 
-    public List<VoteOption> getVoteOptions() { return voteOptions; }
-    public void setVoteOptions(List<VoteOption> voteOptions) { this.voteOptions = voteOptions; }
+    public void setPublishedAt(Instant publishedAt) {
+        this.publishedAt = publishedAt;
+    }
 
-    public List<Vote> getVotes() { return votes; }
-    public void setVotes(List<Vote> votes) { this.votes = votes; }
+    public Instant getValidUntil() {
+        return validUntil;
+    }
 
-    public Vote getVoteByUser(User user){
-        for (int i = 0; i < votes.size(); i++){
+    public void setValidUntil(Instant validUntil) {
+        this.validUntil = validUntil;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
+    public List<VoteOption> getVoteOptions() {
+        return voteOptions;
+    }
+
+    public void setVoteOptions(List<VoteOption> voteOptions) {
+        this.voteOptions = voteOptions;
+    }
+
+    public List<Vote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(List<Vote> votes) {
+        this.votes = votes;
+    }
+
+    public Vote getVoteByUser(User user) {
+        for (int i = 0; i < votes.size(); i++) {
             Vote tmp = votes.get(i);
-            if ( tmp.getUser() == user ){
+            if (tmp.getUser() == user) {
                 return tmp;
             }
         }

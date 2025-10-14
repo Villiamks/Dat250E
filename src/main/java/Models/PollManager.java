@@ -17,27 +17,35 @@ public class PollManager {
     private final AtomicLong voteIdCounter = new AtomicLong(1);
     private final AtomicLong voteOptionIdCounter = new AtomicLong(1);
 
-    public User createUser(User user){
+    // User:
+
+    public User createUser(User user) {
         user.setId(userIdCounter.getAndIncrement());
         users.put(user.getId(), user);
         return user;
     }
-    public List<User> getAllUsers(){
-        return  new ArrayList<>(users.values());
+
+    public List<User> getAllUsers() {
+        return new ArrayList<>(users.values());
     }
-    public User getUserById(long id){
+
+    public User getUserById(long id) {
         return users.get(id);
     }
+
     public boolean deleteUser(long id) {
         return users.remove(id) != null;
     }
-    public List<Poll> getAllPolls(){
+
+    //Polls:
+
+    public List<Poll> getAllPolls() {
         return new ArrayList<>(polls.values());
     }
 
-    public Poll createPoll(Poll poll){
+    public Poll createPoll(Poll poll) {
         poll.setId(pollIdCounter.getAndIncrement());
-        for (VoteOption option : poll.getVoteOptions()){
+        for (VoteOption option : poll.getVoteOptions()) {
             option.setId(voteOptionIdCounter.getAndIncrement());
             option.setPoll(poll);
         }
@@ -45,7 +53,8 @@ public class PollManager {
         poll.getCreator().getCreatedPolls().add(poll);
         return poll;
     }
-    public void deletePoll(Poll poll){
+
+    public void deletePoll(Poll poll) {
         polls.remove(poll.getId());
         User creator = poll.getCreator();
         List<Poll> tmp = creator.getCreatedPolls();
@@ -53,14 +62,18 @@ public class PollManager {
         creator.setCreatedPolls(tmp);
     }
 
+    //Votes:
+
     public void vote(Vote ny) {
         ny.setId(voteIdCounter.getAndIncrement());
         votes.put(ny.getId(), ny);
     }
-    public List<Vote> getAllVotes(){
+
+    public List<Vote> getAllVotes() {
         return new ArrayList<>(votes.values());
     }
-    public void changeVote(Vote ny, Vote old){
+
+    public void changeVote(Vote ny, Vote old) {
         ny.setId(old.getId());
         votes.remove(old.getId());
         votes.put(ny.getId(), ny);

@@ -22,6 +22,7 @@ public class Vote {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -29,6 +30,7 @@ public class Vote {
     public Instant getPublishedAt() {
         return publishedAt;
     }
+
     public void setPublishedAt(Instant publishedAt) {
         this.publishedAt = publishedAt;
     }
@@ -36,6 +38,7 @@ public class Vote {
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -43,6 +46,7 @@ public class Vote {
     public VoteOption getVoteOption() {
         return voteOption;
     }
+
     public void setVoteOption(VoteOption voteOption) {
         this.voteOption = voteOption;
     }
