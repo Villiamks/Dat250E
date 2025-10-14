@@ -43,6 +43,10 @@ public class PollManager {
         return new ArrayList<>(polls.values());
     }
 
+    public Poll getPollById(long id){
+        return polls.get(id);
+    }
+
     public Poll createPoll(Poll poll) {
         poll.setId(pollIdCounter.getAndIncrement());
         for (VoteOption option : poll.getVoteOptions()) {
@@ -61,21 +65,46 @@ public class PollManager {
         tmp.remove(poll);
         creator.setCreatedPolls(tmp);
     }
+    private void updatePoll(Poll poll){
+        List<Vote> ny = new ArrayList<>();
+
+        for (long i = 0; i <= votes.size(); i++){
+            Vote tmp = votes.get(i);
+            if (tmp != null && tmp.getVoteOption().getPoll().getId().equals(poll.getId() )){
+                ny.add(tmp);
+            }
+        }
+        poll.setVotes(ny);
+    }
 
     //Votes:
 
-    public void vote(Vote ny) {
+    public void vote(User user, VoteOption voteOption) {
+        Vote ny = new Vote(user, voteOption);
+
         ny.setId(voteIdCounter.getAndIncrement());
         votes.put(ny.getId(), ny);
+
+        Poll poll = voteOption.getPoll();
+        poll.getVotes().add(ny);
     }
 
     public List<Vote> getAllVotes() {
         return new ArrayList<>(votes.values());
     }
 
-    public void changeVote(Vote ny, Vote old) {
-        ny.setId(old.getId());
-        votes.remove(old.getId());
-        votes.put(ny.getId(), ny);
+    public Vote getVoteById(long id) {
+        return votes.get(id);
+    }
+
+    public void changeVote(User user, VoteOption vo) {
+        if (user != null){
+            Vote old = vo.getPoll().getVoteByUser(user);
+            Vote ny = new Vote(user, vo);
+            ny.setId(old.getId());
+            votes.remove(old.getId());
+            votes.put(ny.getId(), ny);
+            updatePoll(vo.getPoll());
+        }
     }
 }

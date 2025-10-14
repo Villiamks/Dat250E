@@ -21,7 +21,7 @@ public class PollManagerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable long id) {
         User user = pollManager.getUserById(id);
         if (user != null) return ResponseEntity.ok(user);
         return ResponseEntity.notFound().build();
@@ -44,6 +44,11 @@ public class PollManagerController {
         return pollManager.getAllPolls();
     }
 
+    @GetMapping("/{id}")
+    public Poll getPollById(@PathVariable long id){
+        return pollManager.getPollById(id);
+    }
+
     @PostMapping
     public Poll createPoll(@RequestBody Poll poll) {
         return pollManager.createPoll(poll);
@@ -57,8 +62,8 @@ public class PollManagerController {
     //Votes:
 
     @PostMapping
-    public void vote(@RequestBody Vote vote) {
-        pollManager.vote(vote);
+    public void vote(@RequestBody User user, @RequestBody VoteOption voteOption) {
+        pollManager.vote(user, voteOption);
     }
 
     @GetMapping
@@ -66,8 +71,13 @@ public class PollManagerController {
         return pollManager.getAllVotes();
     }
 
+    @GetMapping("/{id}")
+    public Vote getVoteById(long id){
+        return pollManager.getVoteById(id);
+    }
+
     @PutMapping
-    public void changeVote(@RequestBody Vote vote, @RequestBody Vote old) {
-        pollManager.changeVote(vote, old);
+    public void changeVote(@RequestBody User user, @RequestBody VoteOption voteOption) {
+        pollManager.changeVote(user, voteOption);
     }
 }
