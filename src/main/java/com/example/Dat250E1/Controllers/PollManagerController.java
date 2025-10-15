@@ -15,11 +15,6 @@ public class PollManagerController {
     @Autowired
     private PollManager pollManager;
 
-    @GetMapping("/hello")
-    public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-        return "Hello " + name;
-    }
-
     //User:
 
     @GetMapping("/api/users")
