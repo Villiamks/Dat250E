@@ -1,4 +1,4 @@
-package Models;
+package com.example.Dat250E1.Models;
 
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package Models;
+package com.example.Dat250E1.Models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,15 +7,17 @@ public class User {
 
     private long id;
     private String username;
+    private String password;
     private String email;
 
     private List<Poll> createdPolls = new ArrayList<>();
 
     private List<Vote> votes = new ArrayList<>();
 
-    public User(String name, String em) {
+    public User(String name, String em, String pass) {
         username = name;
         email = em;
+        password = pass;
     }
 
     public String getEmail() {
@@ -57,4 +59,8 @@ public class User {
     public void setId(long id) {
         this.id = id;
     }
+
+    public String getPassword() {return password;}
+
+    public void setPassword(String password) {this.password = password;}
 }

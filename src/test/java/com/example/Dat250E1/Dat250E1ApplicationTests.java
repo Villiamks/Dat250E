@@ -1,6 +1,9 @@
 package com.example.Dat250E1;
 
-import Models.*;
+import com.example.Dat250E1.Models.Poll;
+import com.example.Dat250E1.Models.PollManager;
+import com.example.Dat250E1.Models.User;
+import com.example.Dat250E1.Models.VoteOption;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,10 +19,10 @@ class Dat250E1ApplicationTests {
 	void testPollManager() {
         PollManager pollManager = new PollManager();
 
-        User user1 = new User("user1", "user1@gmail.com");
+        User user1 = new User("user1", "user1@gmail.com", "Pass1");
         testUser1(pollManager, user1);
 
-        User user2 = new User("user2", "user2@gmail.com");
+        User user2 = new User("user2", "user2@gmail.com", "Pass2");
         testUser2(pollManager, user2);
 
         Poll poll1 = new Poll("whats good?", Instant.now(), Instant.MAX, user1);
