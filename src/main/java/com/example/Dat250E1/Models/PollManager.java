@@ -12,6 +12,7 @@ public class PollManager {
     private final HashMap<Long, User> users = new HashMap<>();
     private final HashMap<Long, Poll> polls = new HashMap<>();
     private final HashMap<Long, Vote> votes = new HashMap<>();
+    private final HashMap<Long, VoteOption> voteOptions = new HashMap<>();
     private final AtomicLong userIdCounter = new AtomicLong(1);
     private final AtomicLong pollIdCounter = new AtomicLong(1);
     private final AtomicLong voteIdCounter = new AtomicLong(1);
@@ -58,8 +59,9 @@ public class PollManager {
         return poll;
     }
 
-    public void deletePoll(Poll poll) {
-        polls.remove(poll.getId());
+    public void deletePoll(long id) {
+        Poll poll = getPollById(id);
+        polls.remove(id);
         User creator = poll.getCreator();
         List<Poll> tmp = creator.getCreatedPolls();
         tmp.remove(poll);
@@ -67,6 +69,7 @@ public class PollManager {
     }
     private void updatePoll(Poll poll){
         List<Vote> ny = new ArrayList<>();
+        List<VoteOption>  options = new ArrayList<>();
 
         for (long i = 0; i <= votes.size(); i++){
             Vote tmp = votes.get(i);
@@ -74,6 +77,13 @@ public class PollManager {
                 ny.add(tmp);
             }
         }
+        for (long i = 0; i <= voteOptions.size(); i++){
+            VoteOption tmp = voteOptions.get(i);
+            if (tmp != null && tmp.getPoll().getId().equals(poll.getId())){
+                options.add(tmp);
+            }
+        }
+        poll.setVoteOptions(options);
         poll.setVotes(ny);
     }
 
@@ -112,5 +122,26 @@ public class PollManager {
             votes.put(ny.getId(), ny);
             updatePoll(vo.getPoll());
         }
+    }
+
+    // VoteOption;
+
+    public List<VoteOption> getAllVoteOptions() {
+        return new ArrayList<>(voteOptions.values());
+    }
+
+    public VoteOption getVoteOptionById(long id) {
+        return voteOptions.get(id);
+    }
+
+    public void createVoteOption(String caption, int pO, Poll poll){
+        VoteOption ny = new VoteOption(caption, pO, poll);
+        ny.setId(voteOptionIdCounter.getAndIncrement());
+        voteOptions.put(ny.getId(), ny);
+        updatePoll(poll);
+    }
+
+    public void deleteVoteOption(long id) {
+        voteOptions.remove(id);
     }
 }
