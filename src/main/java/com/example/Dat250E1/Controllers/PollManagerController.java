@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,14 @@ public class PollManagerController {
         return pollManager.createPoll(poll);
     }
 
+    @PostMapping("/api/polls/insert")
+    public Poll insertOptions(@RequestBody Map<String, String> inData) {
+        Poll poll = pollManager.getPollById( Integer.parseInt(inData.get("id")) );
+        List<String> str = Arrays.asList(inData.get("options").split(",,"));
+        pollManager.insertOptions(poll, str);
+        return  poll;
+    }
+
     @DeleteMapping("/api/polls/delete")
     public void deletePoll(@PathVariable(value="id") long id) {
         pollManager.deletePoll(id);
@@ -69,11 +78,14 @@ public class PollManagerController {
 
     //Votes:
 
-    @PostMapping("/api/vote")
-    public void vote(@RequestBody Map<String, Integer> inData ) {
-        User user = pollManager.getUserById(inData.get("id"));
+    @PostMapping("/api/votes")
+    public Vote vote(@RequestBody Map<String, Integer> inData ) {
+        User user = null;
+        if (inData.get("id") != null) {
+            user = pollManager.getUserById(inData.get("id"));
+        }
         VoteOption voteOption = pollManager.getVoteOptionById(inData.get("voteoption"));
-        pollManager.vote(user, voteOption);
+        return pollManager.vote(user, voteOption);
     }
 
     @GetMapping("/api/votes")
@@ -87,10 +99,10 @@ public class PollManagerController {
     }
 
     @PutMapping("/api/votes")
-    public void changeVote(@RequestBody Map<String, Integer> inData ) {
+    public Vote changeVote(@RequestBody Map<String, Integer> inData ) {
         User user = pollManager.getUserById(inData.get("id"));
         VoteOption voteOption = pollManager.getVoteOptionById(inData.get("voteoption"));
-        pollManager.changeVote(user, voteOption);
+        return pollManager.changeVote(user, voteOption);
     }
 
     // VoteOption:

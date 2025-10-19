@@ -87,7 +87,7 @@ public class Poll {
         if (votes.size() == 0){
             return null;
         }
-        for (int i = 0; i <= votes.size(); i++) {
+        for (int i = 0; i < votes.size(); i++) {
             Vote tmp = votes.get(i);
             if (tmp != null && tmp.getUser() == user) {
                 return tmp;

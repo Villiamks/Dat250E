@@ -13,7 +13,6 @@ public class VoteOption {
     @JsonIgnore
     private Poll poll;
 
-    @JsonIgnore
     private List<Vote> votes = new ArrayList<>();
 
     public VoteOption(String caption, int presentationOrder, Poll poll) {

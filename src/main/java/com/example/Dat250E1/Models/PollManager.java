@@ -31,6 +31,9 @@ public class PollManager {
     }
 
     public User getUserById(long id) {
+        if (id == 0){
+            return null;
+        }
         return users.get(id);
     }
 
@@ -55,7 +58,7 @@ public class PollManager {
             option.setPoll(poll);
         }
         polls.put(poll.getId(), poll);
-        poll.getCreator().getCreatedPolls().add(poll);
+        //poll.getCreator().getCreatedPolls().add(poll);
         return poll;
     }
 
@@ -67,6 +70,16 @@ public class PollManager {
         tmp.remove(poll);
         creator.setCreatedPolls(tmp);
     }
+
+    public Poll insertOptions(Poll poll, List<String> options) {
+        int y = poll.getVoteOptions().size();
+        for (int i = 0; i < options.size(); i++) {
+            createVoteOption(options.get(i), y+i, poll);
+        }
+        updatePoll(poll);
+        return poll;
+    }
+
     private void updatePoll(Poll poll){
         List<Vote> ny = new ArrayList<>();
         List<VoteOption>  options = new ArrayList<>();
@@ -89,20 +102,21 @@ public class PollManager {
 
     //Votes:
 
-    public void vote(User user, VoteOption voteOption) {
+    public Vote vote(User user, VoteOption voteOption) {
 
         if (user != null && voteOption.getPoll().getVoteByUser(user) != null){
-            changeVote(user, voteOption);
-        } else {
-
-            Vote ny = new Vote(user, voteOption);
-
-            ny.setId(voteIdCounter.getAndIncrement());
-            votes.put(ny.getId(), ny);
-
-            Poll poll = voteOption.getPoll();
-            poll.getVotes().add(ny);
+            return changeVote(user, voteOption);
         }
+
+        Vote ny = new Vote(user, voteOption);
+
+        ny.setId(voteIdCounter.getAndIncrement());
+        votes.put(ny.getId(), ny);
+
+        Poll poll = voteOption.getPoll();
+        poll.getVotes().add(ny);
+        updatePoll(poll);
+        return ny;
     }
 
     public List<Vote> getAllVotes() {
@@ -113,7 +127,7 @@ public class PollManager {
         return votes.get(id);
     }
 
-    public void changeVote(User user, VoteOption vo) {
+    public Vote changeVote(User user, VoteOption vo) {
         if (user != null){
             Vote old = vo.getPoll().getVoteByUser(user);
             Vote ny = new Vote(user, vo);
@@ -121,7 +135,9 @@ public class PollManager {
             votes.remove(old.getId());
             votes.put(ny.getId(), ny);
             updatePoll(vo.getPoll());
+            return ny;
         }
+        return  null;
     }
 
     // VoteOption;
@@ -138,7 +154,6 @@ public class PollManager {
         VoteOption ny = new VoteOption(caption, pO, poll);
         ny.setId(voteOptionIdCounter.getAndIncrement());
         voteOptions.put(ny.getId(), ny);
-        updatePoll(poll);
     }
 
     public void deleteVoteOption(long id) {
