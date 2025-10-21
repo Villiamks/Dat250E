@@ -1,29 +1,39 @@
 package com.example.Dat250E1.Models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 
+@Entity
 public class Vote {
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Instant publishedAt;
 
-    private User user;
-    private VoteOption voteOption;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Users user;
 
-    public Vote(User user, VoteOption voteOption) {
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    private VoteOption votesOn;
+
+    public Vote(Users user, VoteOption votesOn) {
         this.user = user;
-        this.voteOption = voteOption;
+        this.votesOn = votesOn;
         this.publishedAt = Instant.now();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -35,19 +45,19 @@ public class Vote {
         this.publishedAt = publishedAt;
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 
-    public VoteOption getVoteOption() {
-        return voteOption;
+    public VoteOption getVotesOn() {
+        return votesOn;
     }
 
-    public void setVoteOption(VoteOption voteOption) {
-        this.voteOption = voteOption;
+    public void setVotesOn(VoteOption votesOn) {
+        this.votesOn = votesOn;
     }
 }

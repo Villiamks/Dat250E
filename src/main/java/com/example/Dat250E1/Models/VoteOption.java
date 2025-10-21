@@ -1,29 +1,41 @@
 package com.example.Dat250E1.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import jdk.jfr.Enabled;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 
+@Entity
 public class VoteOption {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     private String caption;
     private int presentationOrder;
 
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
     private Poll poll;
 
-    private List<Vote> votes = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private Map<Integer, Vote> votes;
 
     public VoteOption(String caption, int presentationOrder, Poll poll) {
         this.caption = caption;
         this.presentationOrder = presentationOrder;
         this.poll = poll;
+        votes = new LinkedHashMap<>();
     }
 
     // Getters and setters
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public String getCaption() { return caption; }
     public void setCaption(String caption) { this.caption = caption; }
@@ -34,6 +46,8 @@ public class VoteOption {
     public Poll getPoll() { return poll; }
     public void setPoll(Poll poll) { this.poll = poll; }
 
-    public List<Vote> getVotes() { return votes; }
-    public void setVotes(List<Vote> votes) { this.votes = votes; }
+    public Map<Integer, Vote> getVotes() { return votes; }
+    public void setVotes(Map<Integer, Vote> votes) { this.votes = votes; }
+
+
 }

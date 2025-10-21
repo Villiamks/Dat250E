@@ -3,7 +3,6 @@ package com.example.Dat250E1.Controllers;
 import com.example.Dat250E1.Models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -20,13 +19,13 @@ public class PollManagerController {
     //User:
 
     @GetMapping("/api/users")
-    public List<User> getAllUsers() {
+    public List<Users> getAllUsers() {
         return pollManager.getAllUsers();
     }
 
     @GetMapping("/api/users/find")
-    public User getUserById(@RequestParam(value = "id") long id) {
-        User user = pollManager.getUserById(id);
+    public Users getUserById(@RequestParam(value = "id") int id) {
+        Users user = pollManager.getUserById(id);
         if  (user == null) {
             return null;
         }
@@ -34,13 +33,13 @@ public class PollManagerController {
     }
 
     @PostMapping("/api/users")
-    public User createUser(@RequestBody Map<String, String> inData) {
-        User user = new User(inData.get("username"), inData.get("password"), inData.get("email"));
+    public Users createUser(@RequestBody Map<String, String> inData) {
+        Users user = new Users(inData.get("username"), inData.get("password"), inData.get("email"));
         return pollManager.createUser(user);
     }
 
     @DeleteMapping("/api/users/delete")
-    public boolean deleteUser(@PathVariable(value="id") long id) {
+    public boolean deleteUser(@PathVariable(value="id") int id) {
         return pollManager.deleteUser(id);
     }
 
@@ -52,13 +51,13 @@ public class PollManagerController {
     }
 
     @GetMapping("/api/polls/find")
-    public Poll getPollById(@PathVariable(value="id") long id){
+    public Poll getPollById(@PathVariable(value="id") int id){
         return pollManager.getPollById(id);
     }
 
     @PostMapping("/api/polls")
     public Poll createPoll(@RequestBody Map<String, String> inData) {
-        User user = pollManager.getUserById(Integer.parseInt(inData.get("userid")));
+        Users user = pollManager.getUserById(Integer.parseInt(inData.get("userid")));
         Poll poll = new Poll(inData.get("question"), null, null, user);
         return pollManager.createPoll(poll);
     }
@@ -72,7 +71,7 @@ public class PollManagerController {
     }
 
     @DeleteMapping("/api/polls/delete")
-    public void deletePoll(@PathVariable(value="id") long id) {
+    public void deletePoll(@PathVariable(value="id") int id) {
         pollManager.deletePoll(id);
     }
 
@@ -80,7 +79,7 @@ public class PollManagerController {
 
     @PostMapping("/api/votes")
     public Vote vote(@RequestBody Map<String, Integer> inData ) {
-        User user = null;
+        Users user = null;
         if (inData.get("id") != null) {
             user = pollManager.getUserById(inData.get("id"));
         }
@@ -94,13 +93,13 @@ public class PollManagerController {
     }
 
     @GetMapping("/api/votes/{id}")
-    public Vote getVoteById(@PathVariable long id) {
+    public Vote getVoteById(@PathVariable int id) {
         return pollManager.getVoteById(id);
     }
 
     @PutMapping("/api/votes")
     public Vote changeVote(@RequestBody Map<String, Integer> inData ) {
-        User user = pollManager.getUserById(inData.get("id"));
+        Users user = pollManager.getUserById(inData.get("id"));
         VoteOption voteOption = pollManager.getVoteOptionById(inData.get("voteoption"));
         return pollManager.changeVote(user, voteOption);
     }
@@ -113,7 +112,7 @@ public class PollManagerController {
     }
 
     @GetMapping("/api/voteoption/find")
-    public VoteOption getVoteOptionById(@RequestParam(value = "id") long id) {
+    public VoteOption getVoteOptionById(@RequestParam(value = "id") int id) {
         return pollManager.getVoteOptionById(id);
     }
 
@@ -124,7 +123,7 @@ public class PollManagerController {
     }
 
     @DeleteMapping("/api/voteoption")
-    public void deleteVoteOption(@RequestParam(value = "id") long id) {
+    public void deleteVoteOption(@RequestParam(value = "id") int id) {
         pollManager.deleteVoteOption(id);
     }
 }

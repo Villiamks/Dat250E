@@ -1,13 +1,20 @@
 package com.example.Dat250E1.Models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 
+@Entity
 public class Poll {
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     private String question;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -16,22 +23,25 @@ public class Poll {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Instant validUntil;
 
-    private User creator;
-    private List<VoteOption> voteOptions = new ArrayList<>();
-    private List<Vote> votes = new ArrayList<>();
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Users createdBy;
 
-    public Poll(String question, Instant pushedAt, Instant validUntil, User creator) {
+    @OneToMany(cascade = CascadeType.ALL)
+    private Map<Integer, VoteOption> options;
+
+    public Poll(String question, Instant pushedAt, Instant validUntil, Users createdBy) {
         this.question = question;
         this.publishedAt = pushedAt;
         this.validUntil = validUntil;
-        this.creator = creator;
+        this.createdBy = createdBy;
+        options = new LinkedHashMap<>();
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -59,36 +69,48 @@ public class Poll {
         this.validUntil = validUntil;
     }
 
-    public User getCreator() {
-        return creator;
+    public Users getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreator(User creator) {
-        this.creator = creator;
+    public void setCreatedBy(Users createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public List<VoteOption> getVoteOptions() {
-        return voteOptions;
+    public Map<Integer, VoteOption> getOptions() {
+        return options;
     }
 
-    public void setVoteOptions(List<VoteOption> voteOptions) {
-        this.voteOptions = voteOptions;
+    public void setOptions(Map<Integer, VoteOption> options) {
+        this.options = options;
     }
 
-    public List<Vote> getVotes() {
+    public VoteOption addVoteOption(String caption, EntityManager em) {
+        VoteOption vo = new VoteOption(caption, options.size(), this);
+        em.persist(vo);
+        options.put(vo.getId(), vo);
+        return vo;
+    }
+
+    public List<Vote> findAllVotes(){
+        List<Vote> votes = new ArrayList<>();
+
+        for (int i = 0; i < options.size(); i++){
+            VoteOption vo = options.get(i);
+            for (Vote vote : vo.getVotes().values()){
+                votes.add(vote);
+            }
+        }
         return votes;
     }
 
-    public void setVotes(List<Vote> votes) {
-        this.votes = votes;
-    }
+    public Vote getVoteByUser(Users user) {
+        List<Vote> votes = findAllVotes();
 
-    public Vote getVoteByUser(User user) {
-        if (votes.size() == 0){
+        if (votes.isEmpty()){
             return null;
         }
-        for (int i = 0; i < votes.size(); i++) {
-            Vote tmp = votes.get(i);
+        for (Vote tmp : votes) {
             if (tmp != null && tmp.getUser() == user) {
                 return tmp;
             }
