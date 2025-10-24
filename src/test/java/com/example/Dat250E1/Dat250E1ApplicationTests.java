@@ -6,6 +6,10 @@ import com.example.Dat250E1.Models.Users;
 import com.example.Dat250E1.Models.VoteOption;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
@@ -17,7 +21,16 @@ class Dat250E1ApplicationTests {
 
 	@Test
 	void testPollManager() {
-        PollManager pollManager = new PollManager();
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+
+        PollManager pollManager = new PollManager(rabbitTemplate);
 
         Users user1 = new Users("user1", "user1@gmail.com", "Pass1");
         testUser1(pollManager, user1);

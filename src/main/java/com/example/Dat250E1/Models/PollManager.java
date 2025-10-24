@@ -1,8 +1,15 @@
 package com.example.Dat250E1.Models;
 
+import com.example.Dat250E1.DTOs.VoteEvent;
 import com.example.Dat250E1.Services.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,6 +20,8 @@ public class PollManager {
     @Autowired
     private PollService pollService;
 
+    private final RabbitTemplate rabbitTemplate;
+
     private final HashMap<Integer, Users> users = new HashMap<>();
     private final HashMap<Integer, Poll> polls = new HashMap<>();
     private final HashMap<Integer, Vote> votes = new HashMap<>();
@@ -21,6 +30,12 @@ public class PollManager {
     private final AtomicInteger pollIdCounter = new AtomicInteger(0);
     private final AtomicInteger voteIdCounter = new AtomicInteger(0);
     private final AtomicInteger voteOptionIdCounter = new AtomicInteger(0);
+
+    private static final String EXCHANGE_NAME = "poll-exchange";
+
+    public PollManager(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     // User:
 
@@ -45,9 +60,6 @@ public class PollManager {
     //Polls:
 
     public List<Poll> getAllPolls() {
-//        for (Poll poll : polls.values()){
-//            pollService.add(poll);
-//        }
         return new ArrayList<>(polls.values());
     }
 
@@ -59,7 +71,36 @@ public class PollManager {
         poll.setId(pollIdCounter.getAndIncrement());
         polls.put(poll.getId(), poll);
         //pollService.add(poll);
+
+        createPollTopic(poll.getId());
         return poll;
+    }
+
+    public void createPollTopic(int pollId){
+        String key = "poll."+pollId + ".votes";
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, key,
+                new VoteEvent(pollId, null));
+    }
+
+    public void processVoteEvent(VoteEvent voteEvent) {
+        if (voteEvent.getVoteOptionId() == null){
+            return;
+        }
+
+        VoteOption voteOption = voteOptions.get(voteEvent.getVoteOptionId());
+        Users user = null;
+        if (voteEvent.getUserId() != null) {
+            user = users.get(voteEvent.getUserId());
+        }
+
+        Vote vote = new Vote(user, voteOption);
+        votes.put(vote.getId(), vote);
+    }
+
+    public void publishVote(int pollId, int voteOptionId, int userId){
+        VoteEvent voteEvent = new VoteEvent(pollId, voteOptionId, userId);
+        String key = "poll."+pollId + ".votes";
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, key, voteEvent);
     }
 
     public void deletePoll(int id) {
@@ -92,14 +133,25 @@ public class PollManager {
         }
         poll.setOptions(options);
         polls.put(poll.getId(), poll);
-        //pollService.updatePoll(poll);
+    }
+
+    public Map<Integer, Vote> getVotesForPoll(Poll poll){
+        Map< Integer, Vote> tmp = new HashMap<>();
+        for (VoteOption vo : poll.getOptions().values()){
+            for (Vote v : vo.getVotes().values()){
+                tmp.put(v.getId(), v);
+            }
+        }
+        return tmp;
     }
 
     public Integer getVoteCount(int pollId, Integer voteOptionId){
-        if ( pollService.isPresent("" + pollId) ) {
-            return pollService.getVoteCount(pollId, voteOptionId);
+        boolean good = pollService.isPresent(pollId);
+        if ( good ) {
+            return Math.toIntExact(pollService.getVoteCount(pollId, voteOptionId, this));
         } else {
-            return polls.get(pollId).getOptions().get(voteOptionId).getVotes().size();
+            int answ = getVotesForPoll(polls.get(pollId)).size();
+            return answ;
         }
     }
 
@@ -120,6 +172,8 @@ public class PollManager {
 
         Poll poll = voteOption.getPoll();
         updatePoll(poll);
+
+        pollService.invalidatePoll(poll.getId());
         return ny;
     }
 

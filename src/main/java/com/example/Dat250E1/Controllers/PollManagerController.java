@@ -84,13 +84,22 @@ public class PollManagerController {
     //Votes:
 
     @PostMapping("/api/votes")
-    public Vote vote(@RequestBody Map<String, Integer> inData ) {
-        Users user = null;
-        if (inData.get("id") != null) {
-            user = pollManager.getUserById(inData.get("id"));
+    public String vote(@RequestBody Map<String, Integer> inData ) {
+        Integer userId = inData.get("id");
+        Integer voteOptionId = inData.get("voteoption");
+
+        if (voteOptionId == null) {
+            return "Vote option ID is required";
         }
-        VoteOption voteOption = pollManager.getVoteOptionById(inData.get("voteoption"));
-        return pollManager.vote(user, voteOption);
+
+        VoteOption voteOption = pollManager.getVoteOptionById(voteOptionId);
+        if (voteOption == null) {
+            return "Vote option ID is required";
+        }
+
+        int pollId = voteOption.getPoll().getId();
+        pollManager.publishVote(pollId, voteOptionId, userId);
+        return "Vote submitted";
     }
 
     @GetMapping("/api/votes")
