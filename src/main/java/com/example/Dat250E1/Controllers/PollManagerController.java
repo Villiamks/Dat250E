@@ -43,6 +43,7 @@ public class PollManagerController {
         return pollManager.deleteUser(id);
     }
 
+
     //Polls:
 
     @GetMapping("/api/polls")
@@ -68,6 +69,11 @@ public class PollManagerController {
         List<String> str = Arrays.asList(inData.get("options").split(",,"));
         pollManager.insertOptions(poll, str);
         return  poll;
+    }
+
+    @GetMapping("/api/polls/votes/{pollid}/{voteoptionid}")
+    public Integer getVoteCount(@PathVariable(value="pollid") int pollId, @PathVariable(value = "voteoptionid") int voteOptionId ) {
+        return pollManager.getVoteCount(pollId, voteOptionId);
     }
 
     @DeleteMapping("/api/polls/delete")

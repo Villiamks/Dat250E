@@ -1,5 +1,7 @@
 package com.example.Dat250E1.Models;
 
+import com.example.Dat250E1.Services.PollService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -7,6 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class PollManager {
+
+    @Autowired
+    private PollService pollService;
+
     private final HashMap<Integer, Users> users = new HashMap<>();
     private final HashMap<Integer, Poll> polls = new HashMap<>();
     private final HashMap<Integer, Vote> votes = new HashMap<>();
@@ -39,6 +45,9 @@ public class PollManager {
     //Polls:
 
     public List<Poll> getAllPolls() {
+//        for (Poll poll : polls.values()){
+//            pollService.add(poll);
+//        }
         return new ArrayList<>(polls.values());
     }
 
@@ -49,6 +58,7 @@ public class PollManager {
     public Poll createPoll(Poll poll) {
         poll.setId(pollIdCounter.getAndIncrement());
         polls.put(poll.getId(), poll);
+        //pollService.add(poll);
         return poll;
     }
 
@@ -59,6 +69,7 @@ public class PollManager {
         Map<Integer, Poll> tmp = creator.getCreated();
         tmp.remove(poll.getId());
         creator.setCreated(tmp);
+        pollService.invalidatePoll(id);
     }
 
     public Poll insertOptions(Poll poll, List<String> options) {
@@ -81,6 +92,15 @@ public class PollManager {
         }
         poll.setOptions(options);
         polls.put(poll.getId(), poll);
+        //pollService.updatePoll(poll);
+    }
+
+    public Integer getVoteCount(int pollId, Integer voteOptionId){
+        if ( pollService.isPresent("" + pollId) ) {
+            return pollService.getVoteCount(pollId, voteOptionId);
+        } else {
+            return polls.get(pollId).getOptions().get(voteOptionId).getVotes().size();
+        }
     }
 
     //Votes:

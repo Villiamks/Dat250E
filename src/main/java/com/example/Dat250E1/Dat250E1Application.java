@@ -1,6 +1,8 @@
 package com.example.Dat250E1;
 
+import com.example.Dat250E1.Models.Poll;
 import com.example.Dat250E1.Services.LoginService;
+import com.example.Dat250E1.Services.PollService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -18,6 +20,7 @@ public class Dat250E1Application {
     {
         ConfigurableApplicationContext context = SpringApplication.run(Dat250E1Application.class, args);
         context.getBean(LoginService.class);
+        context.getBean(PollService.class);
     }
 
     @Bean
